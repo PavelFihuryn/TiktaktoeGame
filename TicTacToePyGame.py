@@ -1,5 +1,6 @@
 import pygame
 import tictactoe
+import random
 
 # Color
 WHITE = (255, 255, 255)
@@ -15,6 +16,8 @@ WIDTH_WINDOW = 310
 HEIGHT_CELL = 90
 WIDTH_CELL = 90
 MERGE = 10  # Merge between cells
+# FPS
+FPS = 10
 
 
 class Cell:
@@ -41,7 +44,7 @@ class Field:
 
     def display_clear(self):
         self.gameScreen.fill(BLACK)
-        pygame.display.flip()
+        pygame.display.update()
 
     def draw_cell(self, x, y, color):
         pygame.draw.rect(self.gameScreen, color,
@@ -149,12 +152,37 @@ class Field:
     # Checking who is the winner
     def winner(self, board, figure, gamer):
         if tictactoe.is_win(board, figure):
-            self.display_clear()
             return gamer, False, True  # winner, main_game_flag, figure_flag
         if ' ' not in board:
-            self.display_clear()
+            tictactoe.WinComb.comb = ''
             return 'friendship', False, True
         return '', True, False
+
+    def draw_win_line(self, cells):
+        coord = []
+        clock = pygame.time.Clock()
+        if cells:
+            for cel in cells:
+                for i in range(3):
+                    for j in range(3):
+                        if cel == i + j + i * 2:
+                            coord.append([i, j])
+            cel1 = Cell(coord[0][1], coord[0][0])  # Coordinates of start cell
+            cel2 = Cell(coord[1][1], coord[1][0])  # Coordinates of finish cell
+            count = 20  # step of draw
+            d_x = (cel2.x - cel1.x) / count
+            d_y = (cel2.y - cel1.y) / count
+            while count >= 0:
+                clock.tick(FPS)
+                pygame.draw.line(self.gameScreen, random.choice([BLUE, GREEN]),
+                                 [cel1.x + WIDTH_CELL/2, cel1.y + HEIGHT_CELL/2],
+                                 [(cel2.x + WIDTH_CELL/2)-count*d_x, (cel2.y + WIDTH_CELL/2)-count*d_y], 15)
+                count -= 1
+                pygame.display.update()
+        tictactoe.WinComb.comb = ''
+        self.display_clear()
+        pygame.display.update()
+        return False, True  # cross_win_flag, end_game_flag
 
 
 def change_player(player):
@@ -172,6 +200,7 @@ if __name__ == '__main__':
     main_game_flag = False
     end_game_flag = False
     run_game_flag = True
+    cross_win_flag = False
 
     board = [" " for x in range(9)]  # Create game field
     game = Field()  # Create object of game field
@@ -187,9 +216,19 @@ if __name__ == '__main__':
             if gamer == 'computer':
                 num_move = tictactoe.is_can_win(board, figure)
                 board[num_move] = figure
-                win, main_game_flag, end_game_flag = game.winner(board, figure, gamer)
+                win, main_game_flag, cross_win_flag = game.winner(board, figure, gamer)
                 figure = tictactoe.change_player(figure)
                 gamer = 'human'
+                continue
+        if cross_win_flag:
+            game.draw_playing_field(board)
+            if tictactoe.WinComb.comb:
+                a, b, c = tictactoe.WinComb.comb
+                cross_win_flag, end_game_flag = game.draw_win_line([a, c])
+            else:
+                game.display_clear()
+                pygame.display.update()
+                cross_win_flag, end_game_flag = False, True
         if end_game_flag:
             game.end_game_draw(win)
         # Events
@@ -213,7 +252,7 @@ if __name__ == '__main__':
                             col = (y - MERGE) // (MERGE + WIDTH_CELL)
                             if tictactoe.is_empty(board, row + col + row * 2):
                                 board[row + col + row * 2] = figure
-                                win, main_game_flag, end_game_flag = game.winner(board, figure, gamer)
+                                win, main_game_flag, cross_win_flag= game.winner(board, figure, gamer)
                                 figure = tictactoe.change_player(figure)
                                 gamer = 'computer'
                                 continue

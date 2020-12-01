@@ -1,6 +1,7 @@
 import random
 import os
 
+WIN_LIST = [(6, 7, 8), (3, 4, 5), (0, 1, 2), (6, 3, 0), (7, 4, 1), (8, 5, 2), (6, 4, 2), (8, 4, 0)]
 
 def clear():
     '''
@@ -67,15 +68,16 @@ def who_starts():
     return order, gamer
 
 
-def is_win(li: list, mo)->bool:
-    return (li[6] == mo and li[7] == mo and li[8] == mo or  # Верхний ряд
-            li[3] == mo and li[4] == mo and li[5] == mo or  # Средний ряд
-            li[0] == mo and li[1] == mo and li[2] == mo or  # Нижний ряд
-            li[6] == mo and li[3] == mo and li[0] == mo or  # Левый столбец
-            li[7] == mo and li[4] == mo and li[1] == mo or  # Средний столбец
-            li[8] == mo and li[5] == mo and li[2] == mo or  # Правый столбец
-            li[6] == mo and li[4] == mo and li[2] == mo or  # Диагональ
-            li[8] == mo and li[4] == mo and li[0] == mo)  # Диагональ
+class WinComb:
+    comb = ''
+
+
+def is_win(li: list, mo) -> bool:
+    for t in WIN_LIST:
+        a, b, c = t
+        if li[a] == mo and li[b] == mo and li[c] == mo:
+            WinComb.comb = t
+            return True
 
 
 def is_empty(li, mo):
