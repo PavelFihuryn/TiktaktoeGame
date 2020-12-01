@@ -3,26 +3,29 @@ import os
 
 WIN_LIST = [(6, 7, 8), (3, 4, 5), (0, 1, 2), (6, 3, 0), (7, 4, 1), (8, 5, 2), (6, 4, 2), (8, 4, 0)]
 
+
 def clear():
-    '''
+    """
     Clears the terminal screen and scroll back to present
     the user with a nice clean, new screen. Useful for managing
     menu screens in terminal applications.
-    '''
+    """
     os.system('cls' if os.name == 'nt' else 'echo -e \\\\033c')
+
 
 print('A bunch of garbage so we can garble up the screen...')
 clear()
+
 
 # Same effect, less characters...
 
 
 def clear():
-    '''
+    """
     Clears the terminal screen and scroll back to present
     the user with a nice clean, new screen. Useful for managing
     menu screens in terminal applications.
-    '''
+    """
     os.system('cls||echo -e \\\\033c')
 
 
@@ -39,7 +42,7 @@ def choice_figure():
     while figure not in 'X O 0 Х О'.split():  # Допускаем ввод с латинской и русской раскладки и ноль
         figure = input('Необходимо ввсети "Х" или "О"!\nПопробуйте еще раз:  ').upper()
     else:
-        if figure == 'Х': # Проверка на русский ввод
+        if figure == 'Х':  # Проверка на русский ввод
             return 'X'
         elif figure == 'О':
             return 'O'
@@ -95,7 +98,7 @@ def set_player_move(li):
             continue
         else:
             break
-    return int(mo)-1
+    return int(mo) - 1
 
 
 def change_player(pl):
@@ -127,7 +130,8 @@ def is_can_win(li: list, letter: str):
 
 
 def is_repeat():
-    return input('\n\nХотите сыграть еше раз?\n\nВведите "Да" для продолжения или "Enter" для выхода.  ').lower() in 'yes ya y да д'.split()
+    return input('\n\nХотите сыграть еше раз?\n\n'
+                 'Введите "Да" для продолжения или "Enter" для выхода.  ').lower() in 'yes ya y да д'.split()
 
 
 if __name__ == "__main__":
